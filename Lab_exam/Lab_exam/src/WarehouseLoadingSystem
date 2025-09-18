@@ -1,0 +1,211 @@
+import java.util.ArrayDeque;
+import java.util.Scanner;
+
+class Item {
+
+    String code;
+    String name;
+    int quantity;
+
+    public Item(String code, String name, int quantity) {
+
+        this.code = code;
+        this.name = name;
+        this.quantity = quantity;
+
+    }
+
+    @Override
+
+    public String toString() {
+        return code + " | " + name + " | qty=" + quantity;
+
+    }
+
+}
+
+class Truck {
+    String plate;
+    String driver;
+
+    public Truck(String plate, String driver) {
+        this.plate = plate;
+        this.driver = driver;
+
+    }
+
+    @Override
+
+    public String toString() {
+        return plate + " | " + driver;
+
+    }
+
+}
+
+public class WarehouseLoadingSystem {
+
+    private static ArrayDeque<Item> warehouseStack = new ArrayDeque<>();
+    private static ArrayDeque<Truck> truckQueue = new ArrayDeque<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+
+        while (true) {
+
+            showMenu();
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) {
+
+                case 1:
+
+                    storeItem();
+
+                    break;
+
+                case 2:
+
+                    viewWarehouseStack();
+
+                    break;
+
+                case 3:
+
+                    registerTruck();
+
+                    break;
+
+                case 4:
+
+                    viewWaitingTrucks();
+
+                    break;
+
+                case 5:
+
+                    loadNextTruck();
+
+                    break;
+
+                case 0:
+
+                    System.out.println("Exiting program...");
+
+                    return;
+
+                default:
+                    System.out.println("Invalid choice, please try again.");
+
+            }
+
+        }
+
+    }
+
+    private static void showMenu() {
+
+        System.out.println("=== Warehouse Loading System ===");
+        System.out.println("[1] Store item (push)");
+        System.out.println("[2] View warehouse stack");
+        System.out.println("[3] Register arriving truck (enqueue)");
+        System.out.println("[4] View waiting trucks");
+        System.out.println("[5] Load next truck (pop item + poll truck)");
+        System.out.println("[0] Exit");
+
+    }
+
+    private static void storeItem() {
+
+        System.out.println("Enter item code: ");
+        String code = scanner.nextLine();
+        System.out.println("Enter item name: ");
+        String name = scanner.nextLine();
+        System.out.println("Enter item quantity: ");
+        int quantity = scanner.nextInt();
+        scanner.nextLine(); // consume newline
+
+        Item item = new Item(code, name, quantity);
+        warehouseStack.push(item);
+        System.out.println("Item stored: " + item);
+
+    }
+
+    private static void viewWarehouseStack() {
+
+        if (warehouseStack.isEmpty()) {
+            System.out.println("Warehouse stack is empty.");
+
+        } else {
+
+            System.out.println("TOP →");
+            for (Item item : warehouseStack) {
+                System.out.println(item);
+
+            }
+            System.out.println("← BOTTOM");
+
+        }
+
+    }
+
+    private static void registerTruck() {
+
+        System.out.println("Enter truck plate: ");
+        String plate = scanner.nextLine();
+        System.out.println("Enter driver name: ");
+        String driver = scanner.nextLine();
+
+        Truck truck = new Truck(plate, driver);
+
+        truckQueue.offer(truck);
+
+        System.out.println("Registered: " + truck);
+
+    }
+
+    private static void viewWaitingTrucks() {
+
+        if (truckQueue.isEmpty()) {
+
+            System.out.println("No trucks are waiting.");
+
+        } else {
+
+            System.out.println("FRONT →");
+            for (Truck truck : truckQueue) {
+                System.out.println(truck);
+
+            }
+
+            System.out.println("← REAR");
+
+        }
+
+    }
+
+    private static void loadNextTruck() {
+
+        if (warehouseStack.isEmpty()) {
+
+            System.out.println("No items in the warehouse.");
+
+        } else if (truckQueue.isEmpty()) {
+
+            System.out.println("No trucks waiting.");
+
+        } else {
+
+            Item item = warehouseStack.pop();
+            Truck truck = truckQueue.poll();
+            System.out.println("Loaded: " + item + " → " + truck);
+            System.out.println("Remaining items in warehouse: " + warehouseStack.size());
+            System.out.println("Remaining trucks waiting: " + truckQueue.size());
+
+        }
+
+    }
+
+}
